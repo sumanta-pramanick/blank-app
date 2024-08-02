@@ -3,8 +3,7 @@ import openai
 from moviepy.editor import VideoFileClip
 import os
 from pydub import AudioSegment
-import tempfile
-from pathlib import Path
+
 
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 
@@ -25,34 +24,35 @@ def login(user_id, password):
     pwd = st.secrets["password"]
     if user_id == uid and password == pwd:
         st.session_state.logged_in = True
+        st.experimental_rerun()
     else:
         st.error("Invalid login credentials")
 
-# Transcription functions
+
 def transcribe():
     if file is not None:
         file_extension = file.name.split('.')[-1]
 
         if file_extension in ["mp4", "avi", "mov", "mkv"]:
-            with open("audio_video." + file_extension, "wb") as f:
+            with open("uploaded_video." + file_extension, "wb") as f:
                 f.write(file.getbuffer())
 
-            video_clip = VideoFileClip("audio_video." + file_extension)
-            audio_path = "audio_video.wav"
+            video_clip = VideoFileClip("uploaded_video." + file_extension)
+            audio_path = "extracted_audio.wav"
             video_clip.audio.write_audiofile(audio_path)
             video_clip.close()
-            os.remove("audio_video." + file_extension)
+            
         elif file_extension in ["mp3", "wav"]:
-            with open("audio_video." + file_extension, "wb") as f:
+            with open("uploaded_audio." + file_extension, "wb") as f:
                 f.write(file.getbuffer())
 
             if file_extension == "mp3":
-                audio = AudioSegment.from_mp3("audio_video.mp3")
-                audio.export("audio_video.wav", format="wav")
-                audio_path = "audio_video.wav"
-                os.remove("audio_video.mp3")
+                audio = AudioSegment.from_mp3("uploaded_audio.mp3")
+                audio.export("uploaded_audio.wav", format="wav")
+                audio_path = "uploaded_audio.wav"
+                
             else:
-                audio_path = "audio_video.wav"
+                audio_path = "uploaded_audio.wav"
 
         with open(audio_path, "rb") as audio_file:
             response = openai.audio.transcriptions.create(
@@ -60,8 +60,8 @@ def transcribe():
                 file=audio_file
             )
 
-        st.session_state.transcription = response
-        os.remove(audio_path)
+        st.session_state.transcription = response.text
+        
 
 def summarize():
     summary_response = openai.chat.completions.create(
@@ -96,11 +96,9 @@ def translate():
 
 
 if not st.session_state.logged_in:
-    logo_path = "https://awsmp-logos.s3.amazonaws.com/0ba0cfff-f9da-474c-9aea-7ce69f505034/9c50547121ad1016ef9c6e9ef9804cdc.png"
-    col1, col2, col3= st.columns([1,2,1])
+    col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        st.image(logo_path,use_column_width=True)
-        
+        st.image("https://awsmp-logos.s3.amazonaws.com/0ba0cfff-f9da-474c-9aea-7ce69f505034/9c50547121ad1016ef9c6e9ef9804cdc.png")
     st.title("Login")
     user_id = st.text_input("User ID")
     password = st.text_input("Password", type="password")
@@ -121,10 +119,6 @@ else:
     file = st.file_uploader("Upload Audio or Video File", type=["mp3", "wav", "mp4", "avi", "mov", "mkv"])
 
     if file:
-        path = "audio_video"+Path(file.name).suffix
-        st.write(path)
-        with open(path, "wb") as f:
-                f.write(file.getvalue())
         if st.button("Transcribe"):
             transcribe()
 
