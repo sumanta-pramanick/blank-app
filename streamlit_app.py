@@ -3,6 +3,8 @@ import openai
 from moviepy.editor import VideoFileClip
 import os
 from pydub import AudioSegment
+import tempfile
+from pathlib import Path
 
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 
@@ -119,6 +121,12 @@ else:
     file = st.file_uploader("Upload Audio or Video File", type=["mp3", "wav", "mp4", "avi", "mov", "mkv"])
 
     if file:
+        temp_dir = tempfile.mkdtemp()
+        st.write(Path(file.name).suffix)
+        st.write(file.name)
+        path = os.path.join(temp_dir, file.name)
+        with open(path, "wb") as f:
+                f.write(file.getvalue())
         if st.button("Transcribe"):
             transcribe()
 
