@@ -1,28 +1,15 @@
-
 import streamlit as st
 import openai
 from moviepy.editor import VideoFileClip
 import os
 from pydub import AudioSegment
 
-openai.api_key = "sdadad"
 
-custom_html = """
-<div class="banner">
-    <img src="https://awsmp-logos.s3.amazonaws.com/0ba0cfff-f9da-474c-9aea-7ce69f505034/9c50547121ad1016ef9c6e9ef9804cdc.png">
-</div>
-<style>
-    .banner {
-        text-align: center;
-    }
-    .banner img {
-        width: 50%;
-    }
-</style>
-"""
-# Display the custom HTML
-st.components.v1.html(custom_html)
+openai.api_key = 'sk-proj-hdPuvTgSUDzFimcLizHoT3BlbkFJess8t749IMLBOeePTeGa'
 
+
+if 'logged_in' not in st.session_state:
+    st.session_state.logged_in = False
 if 'transcription' not in st.session_state:
     st.session_state.transcription = ''
 if 'summary' not in st.session_state:
@@ -32,6 +19,13 @@ if 'selected_language' not in st.session_state:
 if 'translation' not in st.session_state:
     st.session_state.translation = ''
 
+def login(user_id, password):
+    if user_id == "Kellton" and password == "Kellton@404":
+        st.session_state.logged_in = True
+    else:
+        st.error("Invalid login credentials")
+
+# Transcription functions
 def transcribe():
     if file is not None:
         file_extension = file.name.split('.')[-1]
@@ -97,46 +91,56 @@ def translate():
     )
     st.session_state.translation = translation_response.choices[0].message.content
 
-logo_path = "https://awsmp-logos.s3.amazonaws.com/0ba0cfff-f9da-474c-9aea-7ce69f505034/9c50547121ad1016ef9c6e9ef9804cdc.png"
-st.image(logo_path, width=150)
 
-# Add a header with box-like formatting
-st.markdown("""
-    <div style="border:2px solid #4CAF50; padding: 10px; border-radius: 10px; text-align: center;">
-        <h1 style="color: black;font-size: 24px">Audio and Video Transcription and Summarization</h1>
-    </div>
-    """, unsafe_allow_html=True)
+if not st.session_state.logged_in:
+    logo_path = "https://awsmp-logos.s3.amazonaws.com/0ba0cfff-f9da-474c-9aea-7ce69f505034/9c50547121ad1016ef9c6e9ef9804cdc.png"
+    col1, col2, col3= st.columns([1,2,1])
+    with col2:
+        st.image(logo_path,use_column_width=True)
+        
+    st.title("Login")
+    user_id = st.text_input("User ID")
+    password = st.text_input("Password", type="password")
+    if st.button("Login"):
+        login(user_id, password)
+else:
+    logo_path = "https://awsmp-logos.s3.amazonaws.com/0ba0cfff-f9da-474c-9aea-7ce69f505034/9c50547121ad1016ef9c6e9ef9804cdc.png"
+    col1, col2, col3= st.columns([1,2,1])
+    with col2:
+        st.image(logo_path,use_column_width=True)
+         
+    st.markdown("""
+        <div style="border:2px solid #4CAF50; padding: 10px; border-radius: 10px; text-align: center;">
+            <h1 style="color: black;font-size: 24px">Audio and Video Transcription and Summarization</h1>
+        </div>
+        """, unsafe_allow_html=True)
 
-file = st.file_uploader("Upload Audio or Video File", type=["mp3", "wav", "mp4", "avi", "mov", "mkv"])
+    file = st.file_uploader("Upload Audio or Video File", type=["mp3", "wav", "mp4", "avi", "mov", "mkv"])
 
-if file:
-    if st.button("Transcribe"):
-        transcribe()
+    if file:
+        if st.button("Transcribe"):
+            transcribe()
 
+    if st.session_state.transcription:
+        st.write("Transcription:")
+        st.write(st.session_state.transcription)
 
-if st.session_state.transcription:
-    st.write("Transcription:")
-    st.write(st.session_state.transcription)
+        if st.button("Summarize Transcription"):
+            summarize()
 
-    if st.button("Summarize Transcription"):
-        summarize()
+    if st.session_state.summary:
+        st.write("Summary:")
+        st.write(st.session_state.summary)
 
+        language = st.selectbox(
+            "Select Language for Translation",
+            ["Hindi", "Bengali", "Telugu", "Marathi", "Gujarati", "French", "Spanish", "Mandarin", "Portuguese", "Arabic"]
+        )
+        st.session_state.selected_language = language
 
-if st.session_state.summary:
-    st.write("Summary:")
-    st.write(st.session_state.summary)
+        if st.button("Translate Summary"):
+            translate()
 
-    
-    language = st.selectbox(
-        "Select Language for Translation",
-        ["Hindi", "Bengali", "Telugu", "Marathi", "Gujarati", "French", "Spanish", "Mandarin", "Portuguese", "Arabic"]
-    )
-    st.session_state.selected_language = language
-
-    if st.button("Translate Summary"):
-        translate()
-
-
-if st.session_state.translation:
-    st.write(f"Translation in {st.session_state.selected_language}:")
-    st.write(st.session_state.translation)
+    if st.session_state.translation:
+        st.write(f"Translation in {st.session_state.selected_language}:")
+        st.write(st.session_state.translation)
