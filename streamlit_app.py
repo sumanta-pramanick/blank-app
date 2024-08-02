@@ -34,25 +34,25 @@ def transcribe():
         file_extension = file.name.split('.')[-1]
 
         if file_extension in ["mp4", "avi", "mov", "mkv"]:
-            with open("uploaded_video." + file_extension, "wb") as f:
+            with open("audio_video." + file_extension, "wb") as f:
                 f.write(file.getbuffer())
 
-            video_clip = VideoFileClip("uploaded_video." + file_extension)
-            audio_path = "extracted_audio.wav"
+            video_clip = VideoFileClip("audio_video." + file_extension)
+            audio_path = "audio_video.wav"
             video_clip.audio.write_audiofile(audio_path)
             video_clip.close()
-            os.remove("uploaded_video." + file_extension)
+            os.remove("audio_video." + file_extension)
         elif file_extension in ["mp3", "wav"]:
-            with open("uploaded_audio." + file_extension, "wb") as f:
+            with open("audio_video." + file_extension, "wb") as f:
                 f.write(file.getbuffer())
 
             if file_extension == "mp3":
-                audio = AudioSegment.from_mp3("uploaded_audio.mp3")
-                audio.export("uploaded_audio.wav", format="wav")
-                audio_path = "uploaded_audio.wav"
-                os.remove("uploaded_audio.mp3")
+                audio = AudioSegment.from_mp3("audio_video.mp3")
+                audio.export("audio_video.wav", format="wav")
+                audio_path = "audio_video.wav"
+                os.remove("audio_video.mp3")
             else:
-                audio_path = "uploaded_audio.wav"
+                audio_path = "audio_video.wav"
 
         with open(audio_path, "rb") as audio_file:
             response = openai.audio.transcriptions.create(
@@ -122,9 +122,7 @@ else:
 
     if file:
         temp_dir = tempfile.mkdtemp()
-        st.write(Path(file.name).suffix)
-        st.write(file.name)
-        path = os.path.join(temp_dir, file.name)
+        path = os.path.join(temp_dir, "audio_video"+Path(file.name).suffix)
         with open(path, "wb") as f:
                 f.write(file.getvalue())
         if st.button("Transcribe"):
