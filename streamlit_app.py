@@ -121,8 +121,8 @@ else:
     file = st.file_uploader("Upload Audio or Video File", type=["mp3", "wav", "mp4", "avi", "mov", "mkv"])
 
     if file:
-        temp_dir = tempfile.mkdtemp()
-        path = os.path.join(temp_dir, "audio_video"+Path(file.name).suffix)
+        path = "audio_video"+Path(file.name).suffix
+        st.write(path)
         with open(path, "wb") as f:
                 f.write(file.getvalue())
         if st.button("Transcribe"):
