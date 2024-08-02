@@ -82,7 +82,7 @@ def translate():
     )
     st.session_state.translation = translation_response.choices[0].message.content
 
-logo_path = "C://Users//anany//Downloads//kellton_logo.png"
+logo_path = "https://awsmp-logos.s3.amazonaws.com/0ba0cfff-f9da-474c-9aea-7ce69f505034/9c50547121ad1016ef9c6e9ef9804cdc.png"
 st.image(logo_path, width=150)
 
 # Add a header with box-like formatting
