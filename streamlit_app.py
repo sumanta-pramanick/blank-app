@@ -7,6 +7,21 @@ from pydub import AudioSegment
 
 openai.api_key = "sdadad"
 
+custom_html = """
+<div class="banner">
+    <img src="https://awsmp-logos.s3.amazonaws.com/0ba0cfff-f9da-474c-9aea-7ce69f505034/9c50547121ad1016ef9c6e9ef9804cdc.png">
+</div>
+<style>
+    .banner {
+        text-align: center;
+    }
+    .banner img {
+        width: 50%;
+    }
+</style>
+"""
+# Display the custom HTML
+st.components.v1.html(custom_html)
 
 if 'transcription' not in st.session_state:
     st.session_state.transcription = ''
