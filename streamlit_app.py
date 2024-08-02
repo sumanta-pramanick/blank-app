@@ -19,7 +19,9 @@ if 'translation' not in st.session_state:
     st.session_state.translation = ''
 
 def login(user_id, password):
-    if user_id == "Kellton" and password == "Kellton@404":
+    uid = st.secrets["user_id"]
+    pwd = st.secrets["password"]
+    if user_id == uid and password == pwd:
         st.session_state.logged_in = True
     else:
         st.error("Invalid login credentials")
