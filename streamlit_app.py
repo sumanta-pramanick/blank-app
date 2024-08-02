@@ -24,7 +24,6 @@ def login(user_id, password):
     pwd = st.secrets["password"]
     if user_id == uid and password == pwd:
         st.session_state.logged_in = True
-        st.experimental_rerun()
     else:
         st.error("Invalid login credentials")
 
