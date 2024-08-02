@@ -5,7 +5,7 @@ import os
 from pydub import AudioSegment
 
 
-openai.api_key = 'sk-proj-hdPuvTgSUDzFimcLizHoT3BlbkFJess8t749IMLBOeePTeGa'
+openai.api_key = OPENAI_API_KEY
 
 
 if 'logged_in' not in st.session_state:
