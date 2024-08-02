@@ -4,7 +4,7 @@ from moviepy.editor import VideoFileClip
 import os
 from pydub import AudioSegment
 
-openai.api_key = OPENAI_API_KEY
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 
 if 'logged_in' not in st.session_state:
