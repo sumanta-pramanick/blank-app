@@ -5,6 +5,10 @@ import os
 from pydub import AudioSegment
 import io
 
+st.set_page_config(
+    page_title="Audio and Video Transcription and Summarization",
+    page_icon="👋",
+)
 
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 
@@ -19,16 +23,6 @@ if 'selected_language' not in st.session_state:
     st.session_state.selected_language = ''
 if 'translation' not in st.session_state:
     st.session_state.translation = ''
-
-def login(user_id, password):
-    uid = st.secrets["user_id"]
-    pwd = st.secrets["password"]
-    if user_id == uid and password == pwd:
-        st.session_state.logged_in = True
-        st.experimental_rerun()
-    else:
-        st.error("Invalid login credentials")
-
 
 def transcribe(file):
     if file is not None:
@@ -73,13 +67,25 @@ def translate():
     )
     st.session_state.translation = translation_response.choices[0].message.content
 
+user_id = None
+password = None
+
+def click_login():   
+    uid = st.secrets["user_id"]
+    pwd = st.secrets["password"]
+    if user_id == uid and password == pwd:
+        st.session_state.logged_in = True
+    else:
+        st.error("Invalid login credentials")
+
+def click_reset():
+    st.session_state.logged_in = True
+    st.session_state.transcription = ''
+    st.session_state.summary = ''
+    st.session_state.selected_language = ''
+    st.session_state.translation = ''
 
 def main_page():
-    logo_path = "https://awsmp-logos.s3.amazonaws.com/0ba0cfff-f9da-474c-9aea-7ce69f505034/9c50547121ad1016ef9c6e9ef9804cdc.png"
-    col1, col2, col3= st.columns([1,2,1])
-    with col2:
-        st.image(logo_path,use_column_width=True)
-         
     st.markdown("""
         <div style="border:2px solid #4CAF50; padding: 10px; border-radius: 10px; text-align: center;">
             <h1 style="color: black;font-size: 24px">Audio and Video Transcription and Summarization</h1>
@@ -87,7 +93,6 @@ def main_page():
         """, unsafe_allow_html=True)
 
     file = st.file_uploader("Upload Audio or Video File", type=["mp3", "mp4", "mpeg", "mpga", "m4a", "wav", "webm"])
-
     if file:
         if st.button("Transcribe"):
             transcribe(file)
@@ -115,19 +120,22 @@ def main_page():
     if st.session_state.translation:
         st.write(f"Translation in {st.session_state.selected_language}:")
         st.write(st.session_state.translation)
+        st.write("")
+        st.write("")
+        st.button("Strat Over", on_click=click_reset)
 
-def login_page():
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        st.image("https://awsmp-logos.s3.amazonaws.com/0ba0cfff-f9da-474c-9aea-7ce69f505034/9c50547121ad1016ef9c6e9ef9804cdc.png")
-    st.title("Login")
-    user_id = st.text_input("User ID")
-    password = st.text_input("Password", type="password")
-    if st.button("Login"):
-        login(user_id, password)
+
+col1, col2, col3 = st.columns([1, 2, 1])
+with col2:
+    st.image("https://awsmp-logos.s3.amazonaws.com/0ba0cfff-f9da-474c-9aea-7ce69f505034/9c50547121ad1016ef9c6e9ef9804cdc.png")
+
 
 
 if not st.session_state.logged_in:
-    login_page()
+    st.title("Login")
+    user_id = st.text_input("User ID")
+    password = st.text_input("Password", type="password")
+    st.button("Login", on_click=click_login)
+        # login(user_id, password, placeholder)
 else:
     main_page()
