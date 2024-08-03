@@ -30,7 +30,7 @@ def login(user_id, password):
         st.error("Invalid login credentials")
 
 
-def transcribe():
+def transcribe(file):
     if file is not None:
         audio_buffer = io.BytesIO(file.getbuffer())
         audio_buffer.name = file.name
@@ -74,16 +74,7 @@ def translate():
     st.session_state.translation = translation_response.choices[0].message.content
 
 
-if not st.session_state.logged_in:
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        st.image("https://awsmp-logos.s3.amazonaws.com/0ba0cfff-f9da-474c-9aea-7ce69f505034/9c50547121ad1016ef9c6e9ef9804cdc.png")
-    st.title("Login")
-    user_id = st.text_input("User ID")
-    password = st.text_input("Password", type="password")
-    if st.button("Login"):
-        login(user_id, password)
-else:
+def main_page():
     logo_path = "https://awsmp-logos.s3.amazonaws.com/0ba0cfff-f9da-474c-9aea-7ce69f505034/9c50547121ad1016ef9c6e9ef9804cdc.png"
     col1, col2, col3= st.columns([1,2,1])
     with col2:
@@ -99,7 +90,7 @@ else:
 
     if file:
         if st.button("Transcribe"):
-            transcribe()
+            transcribe(file)
 
     if st.session_state.transcription:
         st.write("Transcription:")
@@ -124,3 +115,19 @@ else:
     if st.session_state.translation:
         st.write(f"Translation in {st.session_state.selected_language}:")
         st.write(st.session_state.translation)
+
+def login_page():
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        st.image("https://awsmp-logos.s3.amazonaws.com/0ba0cfff-f9da-474c-9aea-7ce69f505034/9c50547121ad1016ef9c6e9ef9804cdc.png")
+    st.title("Login")
+    user_id = st.text_input("User ID")
+    password = st.text_input("Password", type="password")
+    if st.button("Login"):
+        login(user_id, password)
+
+
+if not st.session_state.logged_in:
+    login_page()
+else:
+    main_page()
