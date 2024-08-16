@@ -2,7 +2,6 @@ import streamlit as st
 from time import sleep
 from streamlit.runtime.scriptrunner import get_script_run_ctx
 from streamlit.source_util import get_pages
-from persist import persist, load_widget_state
 
 
 def get_current_page_name():
@@ -25,7 +24,7 @@ def make_sidebar():
             st.write("")
             st.write("")
 
-        if st.session_state.get("logged_in", True):
+        if st.session_state.get("logged_in") == True:
             st.write("")
             st.sidebar.title("Transcribe Menu")
             st.page_link(
@@ -38,16 +37,10 @@ def make_sidebar():
                 label="Transcription",
                 icon=":material/transcribe:",
             )
-            # st.page_link(
-            #     "pages/view_data.py", label="View Data", icon=":material/view_module:"
-            # )
-            # st.page_link(
-            #     "pages/query_data.py", label="Query Data", icon=":material/chat:"
-            # )
 
             st.write("")
-            # st.sidebar.title("Kellton GenAI Demo")
-            # st.sidebar.write("Search Device & Service's")
+            st.sidebar.title("")
+            st.sidebar.write("")
 
             if st.button("Log out"):
                 logout()
@@ -61,6 +54,3 @@ def logout():
     st.info("Logged out successfully!")
     sleep(0.5)
     st.switch_page("login.py")
-
-
-load_widget_state()
