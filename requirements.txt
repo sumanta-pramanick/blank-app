@@ -1,9 +1,8 @@
 streamlit
-BeautifulSoup
+beautifulsoup4
 requests
 PyPDF2
 plotly
 nltk
 sentence-transformers
 openai
-threading
