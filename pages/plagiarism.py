@@ -16,6 +16,7 @@ import openai
 
 
 nltk.download("stopwords")
+nltk.download("punkt")
 stop_words = set(stopwords.words("english"))
 model = SentenceTransformer("paraphrase-MiniLM-L6-v2")
 openai.api_key = st.secrets["OPENAI_API_KEY"]
